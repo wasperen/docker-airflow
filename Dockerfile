@@ -60,7 +60,7 @@ RUN chmod +x ${AIRFLOW_HOME}/entrypoint.sh \
     && chmod +x ${AIRFLOW_HOME}/entrypoint.d/*
 
 # Configuration
-ADD config/airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
+ADD airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 
 RUN AIRFLOW_HOME=${AIRFLOW_HOME} \
     && sed -i "s:#AIRFLOW_HOME#:$AIRFLOW_HOME:" ${AIRFLOW_HOME}/airflow.cfg \
