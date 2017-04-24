@@ -1,0 +1,77 @@
+mysql:
+    image: mariadb
+    restart: always
+    ports:
+        - "3306:3306"
+    environment:
+        - MYSQL_ROOT_PASSWORD=secret
+        - MYSQL_USER=airflow
+        - MYSQL_PASSWORD=airflow
+        - MYSQL_DATABASE=airflow
+
+rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+        - "15672:15672"
+        - "5672:5672"
+    environment:
+        - RABBITMQ_DEFAULT_USER=airflow
+        - RABBITMQ_DEFAULT_PASS=airflow
+        - RABBITMQ_DEFAULT_VHOST=airflow
+
+webserver:
+    image: docker-airflow
+    restart: always
+    volumes:
+         - ~/docker-airflow/dags:/opt/airflow/dags
+         - ~/docker-airflow/logs:/opt/airflow/logs
+    environment:
+        - AIRFLOW_HOME=/opt/airflow
+    ports:
+        - "8080:8080"
+    links:
+        - mysql:mysql
+        - rabbitmq:rabbitmq
+        - worker:worker
+        - scheduler:scheduler
+    command: webserver
+
+flower:
+    image: docker-airflow
+    restart: always
+    environment:
+        - AIRFLOW_HOME=/opt/airflow
+    ports:
+        - "5555:5555"
+    links:
+        - rabbitmq:rabbitmq
+    command: flower
+
+scheduler:
+    image: docker-airflow
+    restart: always
+    volumes:
+        - ~/docker-airflow/dags:/opt/airflow/dags
+        - ~/docker-airflow/logs:/opt/airflow/logs
+    environment:
+        - AIRFLOW_HOME=/opt/airflow
+    links:
+        - mysql:mysql
+        - rabbitmq:rabbitmq
+    command: scheduler
+
+worker:
+    image: docker-airflow
+    restart: always
+    volumes:
+        - ~/docker-airflow/dags:/opt/airflow/dags
+        - ~/docker-airflow/logs:/opt/airflow/logs
+    environment:
+        - AIRFLOW_HOME=/opt/airflow
+    ports:
+        - "8793:8793"
+    links:
+        - mysql:mysql
+        - rabbitmq:rabbitmq
+    command: worker
