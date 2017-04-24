@@ -37,9 +37,9 @@ A sample docker-compose file has been provided. This spins up the following serv
 * Airflow -- Scheduler
 * Airflow -- Worker
 
-A simple volume mapping is made to the directory {{docker-airflow}} in the users' home directory.
+A simple volume mapping is made to the directory `docker-airflow` in the users' home directory.
 
 ## Extending
-The {{entrypoint.sh}} runs all entry point scripts in the directory {{AIRFLOW_HOME/entrypoint.d/}}, in order. This image provides some simple environment settings, but when extending from this image, one can include additional entrypoint scripts in the directory {{AIRFLOW_HOME/entrypoint.d/}}.
+The `entrypoint.sh` runs all entry point scripts in the directory `AIRFLOW_HOME/entrypoint.d/`, in order. This image provides some simple environment settings, but when extending from this image, one can include additional entrypoint scripts in the directory `AIRFLOW_HOME/entrypoint.d/`.
 
-The scripts in the entry point directory are all run as {{root}}. Only at the last moment in {{entrypoint.sh}}, the user {{airflow}} is substituted. That is the user running the various Airflow services.
+The scripts in the entry point directory are all run as `root`. Only at the last moment in `entrypoint.sh`, the user `airflow` is substituted. That is the user running the various Airflow services.
