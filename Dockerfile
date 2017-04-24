@@ -38,10 +38,10 @@ RUN rm /etc/localtime && \
 ENV AIRFLOW_VERSION 1.9.0.dev0+apache.incubating
 ENV AIRFLOW_HOME /opt/airflow
 
-RUN useradd --shell /bin/bash --create-home --home ${AIRFLOW_HOME} airflow \
-    && mkdir ${AIRFLOW_HOME}/logs \
-    && mkdir ${AIRFLOW_HOME}/dags \
-    && chown -R airflow: ${AIRFLOW_HOME} \
+RUN useradd --shell /bin/bash --create-home --home $AIRFLOW_HOME airflow \
+    && mkdir $AIRFLOW_HOME/logs \
+    && mkdir $AIRFLOW_HOME/dags \
+    && chown -R airflow: $AIRFLOW_HOME \
     && pip install pytz==2015.7 cryptography pyOpenSSL ndg-httpsclient pyasn1 celery==3.1.17 \
     && pip install --upgrade backports.ssl-match-hostname \
     && pip install configparser
@@ -53,22 +53,21 @@ RUN mkdir /tmp/incubator-airflow \
     && rm -rf /tmp/incubator-airflow
 
 # Entrypoint
-RUN mkdir ${AIRFLOW_HOME}/entrypoint.d
+RUN mkdir $AIRFLOW_HOME/entrypoint.d
 ADD entrypoint.d/* ${AIRFLOW_HOME}/entrypoint.d/
 ADD entrypoint.sh ${AIRFLOW_HOME}/entrypoint.sh
-RUN chmod +x ${AIRFLOW_HOME}/entrypoint.sh \
-    && chmod +x ${AIRFLOW_HOME}/entrypoint.d/*
+RUN chmod +x $AIRFLOW_HOME/entrypoint.sh \
+    && chmod +x $AIRFLOW_HOME/entrypoint.d/*
 
 # Configuration
 ADD airflow.cfg ${AIRFLOW_HOME}/airflow.cfg
 
-RUN AIRFLOW_HOME=${AIRFLOW_HOME} \
-    && sed -i "s:#AIRFLOW_HOME#:$AIRFLOW_HOME:" ${AIRFLOW_HOME}/airflow.cfg \
-    && sed -i "s:#AIRFLOW_HOME#:$AIRFLOW_HOME:" ${AIRFLOW_HOME}/entrypoint.d/*
+RUN sed -i "s:#AIRFLOW_HOME#:$AIRFLOW_HOME:" $AIRFLOW_HOME/airflow.cfg \
+    && sed -i "s:#AIRFLOW_HOME#:$AIRFLOW_HOME:" $AIRFLOW_HOME/entrypoint.d/*
 
 RUN FERNET_KEY=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print FERNET_KEY") \
-    && sed -i "s/#FERNET_KEY#/$FERNET_KEY/" ${AIRFLOW_HOME}/airflow.cfg \
-    && sed -i "s/#FERNET_KEY#/$FERNET_KEY/" ${AIRFLOW_HOME}/entrypoint.d/*
+    && sed -i "s/#FERNET_KEY#/$FERNET_KEY/" $AIRFLOW_HOME/airflow.cfg \
+    && sed -i "s/#FERNET_KEY#/$FERNET_KEY/" $AIRFLOW_HOME/entrypoint.d/*
 
 EXPOSE 8080 5555 8793
 
